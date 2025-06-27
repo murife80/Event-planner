@@ -14,11 +14,8 @@ from datetime import datetime
 from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
 from models import db, User, Event, RSVP
 
-# ────────────────────────────
 # App & Extension Setup
-# ────────────────────────────
 app = Flask(__name__)
-
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
 app.config["JWT_SECRET_KEY"] = "super-secret-key-change-me"
@@ -29,18 +26,18 @@ db.init_app(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
 
-# ────────────────────────────
-# Routes
-# ────────────────────────────
+
 @app.route("/")
 def home():
     return {"message": "Event Planner API"}
+
 
 # ---------- Public ----------
 @app.route("/events", methods=["GET"])
 def get_events():
     events = Event.query.all()
     return jsonify([e.to_dict() for e in events]), 200
+
 
 # ---------- Protected (create event) ----------
 @app.route("/events", methods=["POST"])
@@ -70,11 +67,12 @@ def create_event():
         location=location,
         start_time=start_dt,
         end_time=end_dt,
-        host_id=user_id  # or created_by depending on your model
-    )
+        
+     )
     db.session.add(event)
     db.session.commit()
     return {"message": "Event created", "event": event.to_dict()}, 201
+
 
 # ---------- Protected (RSVP) ----------
 @app.route("/events/<int:event_id>/rsvp", methods=["POST"])
@@ -92,6 +90,7 @@ def rsvp_event(event_id):
     db.session.commit()
     return {"message": "RSVP successful"}, 201
 
+
 # ---------- Register ----------
 @app.route("/register", methods=["POST"])
 def register():
@@ -108,12 +107,14 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    token = create_access_token(identity=user.id)
+    # ---- CAST identity to str (PyJWT ≥ 2.10) ----
+    token = create_access_token(identity=str(user.id))
     return {
         "message": "User registered",
         "user": {"id": user.id, "username": user.username},
         "access_token": token,
     }, 201
+
 
 # ---------- Login ----------
 @app.route("/login", methods=["POST"])
@@ -125,15 +126,14 @@ def login():
     if not user or not check_password_hash(user.password_hash, password):
         return {"error": "Invalid credentials"}, 401
 
-    token = create_access_token(identity=user.id)
+    # ---- CAST identity to str (PyJWT ≥ 2.10) ----
+    token = create_access_token(identity=str(user.id))
     return {
         "message": "Login successful",
         "user": {"id": user.id, "username": user.username},
         "access_token": token,
     }, 200
 
-# ────────────────────────────
-# Run server
-# ────────────────────────────
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5555)      # dev server

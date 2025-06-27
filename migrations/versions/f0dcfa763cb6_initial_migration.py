@@ -83,3 +83,5 @@ def downgrade():
     op.drop_table('events')
     op.drop_table('users')
     # ### end Alembic commands ###
+
+    
