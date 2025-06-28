@@ -17,9 +17,9 @@ class User(db.Model):
     events = db.relationship('Event', backref='host', lazy=True)
     rsvps  = db.relationship('RSVP',  backref='user', lazy=True)
 
-    # ──────────────────────
+    
     # Password-helper methods
-    # ──────────────────────
+
     def set_password(self, plaintext):
         """Hash the password and store it."""
         self.password_hash = generate_password_hash(plaintext)
