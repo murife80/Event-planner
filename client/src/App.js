@@ -257,7 +257,7 @@ const styles = {
     padding: "1.5rem",
     maxWidth: "500px",
     margin: "1rem auto",
-    boxShadow: "0 0 10px #ffe0b2",
+    boxShadow: "0 0 10pxrgb(0, 5, 16)",
   },
   form: {
     display: "flex",
@@ -301,7 +301,7 @@ const styles = {
     borderRadius: "12px",
     margin: "1rem auto",
     maxWidth: "600px",
-    boxShadow: "0 0 10px #ffc0cb",
+    boxShadow: "0 0 10pxrgb(200, 255, 192)",
   },
   link: {
     color: "#1976d2",

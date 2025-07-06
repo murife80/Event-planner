@@ -27,7 +27,7 @@ migrate = Migrate(app, db)
 jwt = JWTManager(app)
 
 
-@app.route("/")
+@app.route("/") #home route
 def home():
     return {"message": "Event Planner API"}
 
@@ -41,7 +41,7 @@ def get_events():
 
 # ---------- Protected (create event) ----------
 @app.route("/events", methods=["POST"])
-@jwt_required()
+@jwt_required() 
 def create_event():
     user_id = get_jwt_identity()
     data = request.get_json()
@@ -67,11 +67,11 @@ def create_event():
         location=location,
         start_time=start_dt,
         end_time=end_dt,
-        
+
      )
     db.session.add(event)
     db.session.commit()
-    return {"message": "Event created", "event": event.to_dict()}, 201
+    return {"message": "Event created", "event": event.to_dict()}, 201 
 
 
 # ---------- Protected (RSVP) ----------
@@ -80,27 +80,27 @@ def create_event():
 def rsvp_event(event_id):
     user_id = get_jwt_identity()
 
-    if not Event.query.get(event_id):
-        return {"error": "Event not found"}, 404
-    if RSVP.query.filter_by(event_id=event_id, user_id=user_id).first():
+    if not Event.query.get(event_id): #checks an event
+        return {"error": "Event not found"}, 404 
+    if RSVP.query.filter_by(event_id=event_id, user_id=user_id).first(): #duplicate prevention 
         return {"error": "Already RSVPed"}, 409
 
-    rsvp = RSVP(event_id=event_id, user_id=user_id)
+    rsvp = RSVP(event_id=event_id, user_id=user_id) 
     db.session.add(rsvp)
     db.session.commit()
-    return {"message": "RSVP successful"}, 201
+    return {"message": "RSVP successful"}, 201 # success RSVP creation
 
 
 # ---------- Register ----------
 @app.route("/register", methods=["POST"])
 def register():
-    data = request.get_json()
+    data = request.get_json() #JSON payload
     username, email, password = data.get("username"), data.get("email"), data.get("password")
 
     if not username or not email or not password:
-        return {"error": "Missing fields"}, 400
-    if User.query.filter_by(email=email).first():
-        return {"error": "User already exists"}, 409
+        return {"error": "Missing fields"}, 400 
+    if User.query.filter_by(email=email).first(): 
+        return {"error": "User already exists"}, 409 # email already been used
 
     hashed_pw = generate_password_hash(password)
     user = User(username=username, email=email, password_hash=hashed_pw)
@@ -108,12 +108,12 @@ def register():
     db.session.commit()
 
     # ---- CAST identity to str (PyJWT ≥ 2.10) ----
-    token = create_access_token(identity=str(user.id))
+    token = create_access_token(identity=str(user.id))  # JWT accessntoken
     return {
         "message": "User registered",
         "user": {"id": user.id, "username": user.username},
         "access_token": token,
-    }, 201
+    }, 201                                               #U
 
 
 # ---------- Login ----------
@@ -121,7 +121,7 @@ def register():
 def login():
     data = request.get_json()
     email, password = data.get("email"), data.get("password")
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(email=email).first() #look for user in database
 
     if not user or not check_password_hash(user.password_hash, password):
         return {"error": "Invalid credentials"}, 401

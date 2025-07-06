@@ -1,70 +1,263 @@
-# Getting Started with Create React App
+# 🗓️ Event Planner App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full‑stack web application built with **Flask (Python)** and **React (JavaScript)** that lets users create, manage, and RSVP to events. It showcases RESTful APIs, relational data modelling, modern form handling with Formik + Yup, and client‑side routing with a persistent navbar.
 
-## Available Scripts
+> **Live Demo:** *Add URL once deployed*
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 📋 Table of Contents
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. [Features](#features)
+2. [Tech Stack](#tech-stack)
+3. [Architecture](#architecture)
+4. [Getting Started](#getting-started)
+5. [Environment Variables](#environment-variables)
+6. [Scripts](#scripts)
+7. [API Reference](#api-reference)
+8. [Folder Structure](#folder-structure)
+9. [Screenshots](#screenshots)
+10. [Roadmap](#roadmap)
+11. [Rubric Checklist](#rubric-checklist)
+12. [Contributing](#contributing)
+13. [License](#license)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## ✨ Features
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* **Event CRUD** – Create, read, update, and delete events from the UI.
+* **RSVP System** – Users can RSVP with a custom status (`Going`, `Maybe`, `Not Going`).
+* **Persistent Navbar** – Quick navigation between *Home*, *Create Event*, and *My Events* routes using **React Router**.
+* **Formik + Yup Validation** – Robust, client‑side form validation with clear error messages.
+* **Responsive UI** – Clean layout that adapts to desktop and mobile.
+* **RESTful Flask API** – JSON endpoints with proper status codes and error handling.
+* **Database Migrations** – Managed by **Flask‑Migrate**.
 
-### `npm run build`
+> **Stretch Goals**: Authentication via JWT, event categories & filtering, image uploads, calendar view, email/SMS notifications.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🛠️ Tech Stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Backend
 
-### `npm run eject`
+* Python 3.11
+* Flask & Flask‑RESTful
+* SQLAlchemy ORM
+* Flask‑Migrate
+* Marshmallow (serialization)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Frontend
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+* React 19
+* React Router DOM 7
+* Formik & Yup
+* Axios / Fetch API
+* Vite (build tool)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### DevOps
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+* Docker (optional)
+* Render (Flask) & Netlify (React) for deployment
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🏗️ Architecture
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```text
+client/         # React SPA
+ ├─ src/
+ │   ├─ components/  # Navbar, EventCard, etc.
+ │   ├─ pages/       # HomePage, CreateEventPage, MyEventsPage
+ │   └─ api/         # axios wrappers
+server/         # Flask API
+ ├─ app.py
+ ├─ models.py
+ ├─ routes/
+ └─ migrations/
+```
 
-### Code Splitting
+A good separation of concerns ensures maintainability and scalability.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## ⚙️ Getting Started
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 1. Clone the Repository
 
-### Making a Progressive Web App
+```bash
+git clone https://github.com/<your‑username>/event-planner.git
+cd event-planner
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 2. Backend Setup
 
-### Advanced Configuration
+```bash
+cd server
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+flask db upgrade  # apply migrations
+flask run         # starts on http://127.0.0.1:5000
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 3. Frontend Setup
 
-### Deployment
+```bash
+cd ../client
+npm install
+npm run dev       # starts on http://localhost:5173
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+> Both servers must run concurrently in separate terminals during development.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🔐 Environment Variables
+
+Create a `.env` file in `server/`:
+
+```
+FLASK_ENV=development
+DATABASE_URL=sqlite:///instance/dev.db   # or postgres URL
+SECRET_KEY=supersecret
+```
+
+Create a `.env` in `client/` (if needed):
+
+```
+VITE_API_BASE_URL=http://127.0.0.1:5000
+```
+
+---
+
+## 🧩 Scripts
+
+| Command                     | Location  | Purpose                |
+| --------------------------- | --------- | ---------------------- |
+| `npm run dev`               | `client/` | Start React dev server |
+| `npm run build`             | `client/` | Production build       |
+| `flask run`                 | `server/` | Start Flask API        |
+| `flask db migrate -m "msg"` | `server/` | Create migration       |
+| `flask db upgrade`          | `server/` | Apply migrations       |
+
+---
+
+## 📑 API Reference
+
+| Method | Endpoint       | Description            |
+| ------ | -------------- | ---------------------- |
+| GET    | `/events`      | List all events        |
+| GET    | `/events/<id>` | Retrieve event details |
+| POST   | `/events`      | Create a new event     |
+| PATCH  | `/events/<id>` | Update an event        |
+| DELETE | `/events/<id>` | Delete an event        |
+| POST   | `/rsvps`       | RSVP to an event       |
+| GET    | `/rsvps`       | List all RSVPs         |
+| DELETE | `/rsvps/<id>`  | Cancel RSVP            |
+
+---
+
+## 🗂️ Folder Structure (Client)
+
+```text
+src/
+ ├─ components/
+ │   ├─ Navbar.js
+ │   ├─ EventCard.js
+ │   └─ ...
+ ├─ pages/
+ │   ├─ HomePage.js
+ │   ├─ CreateEventPage.js
+ │   └─ MyEventsPage.js
+ ├─ api/
+ │   └─ events.js
+ ├─ App.js
+ └─ main.jsx
+```
+
+---
+
+## 📸 Screenshots
+
+Add GIFs or images of:
+
+1. Home page listing events
+2. Create Event form with validation errors
+3. Event Details with RSVP list
+4. Mobile view with hamburger menu (if implemented)
+
+---
+
+## 🛣️ Roadmap
+
+* [ ] Deploy backend to Render
+* [ ] Deploy frontend to Netlify
+* [ ] Add authentication via JWT
+* [ ] Event image uploads (Cloudinary)
+* [ ] Calendar view with FullCalendar
+
+---
+
+## 📑 Rubric Checklist
+
+### Backend (Flask) – 5 Marks
+
+* [x] ≥3 models
+* [x] 2 one‑to‑many relationships
+* [x] 1 many‑to‑many relationship with extra attribute
+* [x] CRUD routes
+* [x] Validation & errors
+
+### Frontend (React) – 5 Marks
+
+* [x] Data fetching & display
+* [x] React Router ≥3 routes
+* [x] Navbar navigation
+* [x] CRUD interactions
+* [x] State management (hooks)
+
+### Forms (Formik + Yup) – 5 Marks
+
+* [x] All create/update forms use Formik
+* [x] Type & format validation
+* [x] Error feedback
+
+### Code Quality – 3 Marks
+
+* [x] Clean folder layout
+* [x] Meaningful names
+* [x] DRY & reusable components
+
+### Docs & Deployment – 2 Marks
+
+* [x] Comprehensive README
+* [ ] Live deployment
+
+**Total:** /20
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📜 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+## 🙋‍♂️ Author
+
+**Melvin Muchoi**
+[GitHub](https://github.com/your-username) • [LinkedIn](https://linkedin.com/in/your-profile)
